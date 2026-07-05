@@ -1,0 +1,124 @@
+{
+  "metrics": {
+    "accuracy": 84.73,
+    "precision": 80.03,
+    "recall": 76.0,
+    "f1_score": 77.96,
+    "roc_auc": 0.923
+  },
+  "confusion_matrix": [
+    [
+      7936,
+      927
+    ],
+    [
+      1173,
+      3714
+    ]
+  ],
+  "n_records_analyzed": 55000,
+  "n_test_records": 13750,
+  "overall_churn_rate": 35.55,
+  "top_drivers": [
+    {
+      "feature": "contract_type",
+      "impact": 0.2302,
+      "label": "Contract type"
+    },
+    {
+      "feature": "monthly_charges",
+      "impact": 0.0847,
+      "label": "Monthly charges"
+    },
+    {
+      "feature": "tenure_months",
+      "impact": 0.0814,
+      "label": "Tenure (months)"
+    },
+    {
+      "feature": "internet_service",
+      "impact": 0.0486,
+      "label": "Internet service"
+    },
+    {
+      "feature": "total_charges",
+      "impact": 0.0278,
+      "label": "Total charges"
+    },
+    {
+      "feature": "payment_method",
+      "impact": 0.0275,
+      "label": "Payment method"
+    },
+    {
+      "feature": "online_security",
+      "impact": 0.0227,
+      "label": "Online security add-on"
+    },
+    {
+      "feature": "tech_support",
+      "impact": 0.0195,
+      "label": "Tech support add-on"
+    },
+    {
+      "feature": "paperless_billing",
+      "impact": 0.0108,
+      "label": "Paperless billing"
+    },
+    {
+      "feature": "partner",
+      "impact": 0.0068,
+      "label": "Has partner"
+    }
+  ],
+  "churn_by_contract": [
+    {
+      "segment": "Month-to-month",
+      "churn_rate": 58.18
+    },
+    {
+      "segment": "One year",
+      "churn_rate": 12.54
+    },
+    {
+      "segment": "Two year",
+      "churn_rate": 3.04
+    }
+  ],
+  "churn_by_internet": [
+    {
+      "segment": "DSL",
+      "churn_rate": 27.71
+    },
+    {
+      "segment": "Fiber optic",
+      "churn_rate": 50.69
+    },
+    {
+      "segment": "No",
+      "churn_rate": 16.73
+    }
+  ],
+  "churn_by_tenure": [
+    {
+      "segment": "0-6",
+      "churn_rate": 64.85
+    },
+    {
+      "segment": "7-12",
+      "churn_rate": 50.31
+    },
+    {
+      "segment": "13-24",
+      "churn_rate": 37.58
+    },
+    {
+      "segment": "25-48",
+      "churn_rate": 38.87
+    },
+    {
+      "segment": "49-72",
+      "churn_rate": 19.08
+    }
+  ]
+}
