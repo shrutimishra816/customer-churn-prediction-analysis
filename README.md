@@ -44,14 +44,30 @@ An explainable churn prediction system for a telecom customer base — from SQL-
 ## Run it yourself
 
 ```bash
-pip install pandas numpy scikit-learn shap
+pip install pandas numpy scikit-learn shap openpyxl
 python data/generate_data.py
 python python/churn_model.py
+python excel_reporting/churn_root_cause_audit_report.py
 # then open dashboard/index.html in a browser
 ```
 
+## Root-cause & compliance audit report (Excel)
+
+`excel_reporting/churn_root_cause_audit_report.py` turns the SHAP driver
+ranking into an audit-style **Excel** deliverable — the format an
+operations/quality stakeholder actually reviews, not just a model
+scorecard:
+
+- **Summary** — base attrition rate, total churned, top root-cause segment
+- **Root Cause Pareto** — churn ranked by segment (contract type, payment method, tenure, service tier), with cumulative % and a chart
+- **Compliance Audit** — every segment vs. a target attrition threshold, Pass/Non-Compliant flagged, same logic a quality team applies to defect-rate audits by line or SKU
+- **Customer Watchlist** — highest-value churned customers in the worst segment, ready for retention outreach
+
+This sits alongside `retention_report.md` and the SHAP dashboard as a third,
+more operational view of the same root-cause analysis.
+
 ## Tech stack
-`Python` (pandas, scikit-learn, SHAP) · `SQL` (CTEs & window functions) · `Chart.js` for the dashboard front end.
+`Python` (pandas, scikit-learn, SHAP, openpyxl) · `SQL` (CTEs & window functions) · `Chart.js` for the dashboard front end.
 
 ---
 *Note: this project uses a synthetic dataset engineered to mirror real-world telecom churn patterns (contract-driven risk, tenure decay, service-tier effects) for demonstration purposes. The pipeline is designed to plug into a live customer table with minimal changes.*
