@@ -1,0 +1,34 @@
+[
+  {
+    "segment": 1,
+    "n_customers": 15655,
+    "avg_tenure_months": 18.5,
+    "avg_monthly_charges": 76.47,
+    "avg_total_charges": 1399.4,
+    "churn_rate_pct": 55.78
+  },
+  {
+    "segment": 3,
+    "n_customers": 14867,
+    "avg_tenure_months": 55.4,
+    "avg_monthly_charges": 77.83,
+    "avg_total_charges": 4283.15,
+    "churn_rate_pct": 35.58
+  },
+  {
+    "segment": 2,
+    "n_customers": 11691,
+    "avg_tenure_months": 17.0,
+    "avg_monthly_charges": 39.24,
+    "avg_total_charges": 633.58,
+    "churn_rate_pct": 30.72
+  },
+  {
+    "segment": 0,
+    "n_customers": 12787,
+    "avg_tenure_months": 52.2,
+    "avg_monthly_charges": 42.99,
+    "avg_total_charges": 2200.96,
+    "churn_rate_pct": 15.15
+  }
+]

@@ -5,13 +5,17 @@ Web scraping module added to the Churn Prediction project to demonstrate
 the data-collection side of the pipeline (BeautifulSoup / Selenium),
 alongside the existing SQL exploration and modeling layers.
 
-Motivation for this project specifically:
-Churn models here are trained on internal customer data only. In a real
-deployment you'd also want an external "market pressure" signal -- e.g.
-how much competitor/industry activity is happening in a given period --
-to add as a feature or as context in the retention report. This script
-scrapes a live, public source and produces a tidy CSV that can be joined
-against the customer dataset by date/segment.
+What it scrapes:
+This project's own Python dependency stack (pandas, scikit-learn, shap,
+requests, beautifulsoup4, selenium, scrapy, matplotlib, seaborn) — pulling
+each package's live PyPI project page for its current version, summary,
+and author. It's a small, self-contained "dependency intelligence" report
+(useful for spotting outdated pins before a release) and, more broadly,
+a template for scraping any list of target pages politely and reliably.
+
+robots.txt: pypi.org's robots.txt disallows /search*, /simple/, /packages/,
+etc., but NOT individual /project/<name>/ pages, so this script's target
+is allowed to be crawled.
 
 Libraries: requests + BeautifulSoup for static HTML (used below).
 A Selenium fallback class is included for pages that render their
@@ -40,18 +44,22 @@ HEADERS = {
     )
 }
 
-# Live, public, scrape-friendly source used to demonstrate the pipeline.
-# In production this would point at a competitor pricing/plans page or a
-# market-activity feed relevant to the business; swap SOURCE_URL and the
-# parsing logic in `parse_listing` for that target.
-SOURCE_URL = "https://github.com/trending/python?since=daily"
+# This project's own dependencies (see requirements.txt) — a self-referential,
+# always-relevant scrape target instead of a hardcoded arbitrary page.
+PACKAGES = [
+    "pandas", "numpy", "scikit-learn", "shap", "requests",
+    "beautifulsoup4", "selenium", "scrapy", "matplotlib", "seaborn",
+]
+
+PROJECT_URL_TMPL = "https://pypi.org/project/{package}/"
 
 
 @dataclass
-class ListingRecord:
-    name: str
-    description: str
-    stars_today: str
+class PackageRecord:
+    package: str
+    latest_version: str
+    summary: str
+    author: str
 
 
 def fetch_html(url: str, retries: int = 3, backoff: float = 1.5) -> str:
@@ -68,29 +76,25 @@ def fetch_html(url: str, retries: int = 3, backoff: float = 1.5) -> str:
     raise RuntimeError(f"Failed to fetch {url} after {retries} attempts") from last_exc
 
 
-def parse_listing(html: str) -> list[ListingRecord]:
-    """Parse repo cards into structured records (name, description, stars gained today)."""
+def parse_package_page(html: str, package: str) -> PackageRecord:
     soup = BeautifulSoup(html, "html.parser")
-    records: list[ListingRecord] = []
 
-    for article in soup.select("article.Box-row"):
-        title_tag = article.select_one("h2 a")
-        if not title_tag:
-            continue
-        name = title_tag.get_text(strip=True).replace("\n", "").replace(" ", "")
+    header = soup.select_one("h1.package-header__name")
+    name_and_version = header.get_text(strip=True) if header else f"{package} unknown"
+    latest_version = name_and_version.split()[-1] if name_and_version else "unknown"
 
-        desc_tag = article.select_one("p")
-        description = desc_tag.get_text(strip=True) if desc_tag else ""
+    summary_tag = soup.select_one("p.package-description__summary")
+    summary = summary_tag.get_text(strip=True) if summary_tag else ""
 
-        stars_tag = article.select_one("span.d-inline-block.float-sm-right")
-        stars_today = stars_tag.get_text(strip=True) if stars_tag else "0"
+    author_tag = soup.select_one('a[href^="/user/"]')
+    author = author_tag.get_text(strip=True) if author_tag else "unknown"
 
-        records.append(ListingRecord(name=name, description=description, stars_today=stars_today))
-
-    return records
+    return PackageRecord(
+        package=package, latest_version=latest_version, summary=summary, author=author
+    )
 
 
-def save_to_csv(records: list[ListingRecord], path: str) -> None:
+def save_to_csv(records: list[PackageRecord], path: str) -> None:
     if not records:
         print("No records scraped — nothing to save.")
         return
@@ -138,8 +142,13 @@ class SeleniumFallbackScraper:
 
 
 def main() -> None:
-    html = fetch_html(SOURCE_URL)
-    records = parse_listing(html)
+    records = []
+    for package in PACKAGES:
+        url = PROJECT_URL_TMPL.format(package=package)
+        html = fetch_html(url)
+        records.append(parse_package_page(html, package))
+        time.sleep(0.5)  # be polite between requests
+
     save_to_csv(records, "web_scraping/market_signal.csv")
 
 

@@ -6,6 +6,6 @@ shap,0.52.0,A unified approach to explain the output of any machine learning mod
 requests,2.34.2,Python HTTP for Humans.,graffatcolmingov
 beautifulsoup4,4.15.0,Screen-scraping library,leonard
 selenium,4.46.0,Official Python bindings for Selenium WebDriver,Corey.Goldberg
-scrapy,2.17.0,A high-level Web Crawling and Web Scraping framework,dangra
 matplotlib,3.11.0,Python plotting package,ivanov
 seaborn,0.13.2,Statistical data visualization,mwaskom
+scrapy,2.17.0,A high-level Web Crawling and Web Scraping framework,dangra
