@@ -26,6 +26,8 @@ An explainable churn prediction system for a telecom customer base — from SQL-
 ├── dashboard/
 │   ├── index.html               # Interactive risk dashboard (Chart.js)
 │   └── dashboard_data.json      # Precomputed model metrics + SHAP drivers
+├── web_scraping/
+│   └── scrape_market_signal.py  # BeautifulSoup/Selenium scraper for an external market signal
 ├── retention_report.md          # Stakeholder-facing business summary and recommendations
 ```
 
@@ -66,8 +68,31 @@ scorecard:
 This sits alongside `retention_report.md` and the SHAP dashboard as a third,
 more operational view of the same root-cause analysis.
 
+## Web scraping (external market signal)
+
+`web_scraping/scrape_market_signal.py` adds a data-collection layer to the
+pipeline, separate from the internal customer dataset:
+
+- Uses `requests` + `BeautifulSoup` to pull a live external listing and
+  parse it into a tidy CSV (`web_scraping/market_signal.csv`) — retries
+  with backoff, a proper User-Agent, and CSS-selector-based parsing
+- Includes a `SeleniumFallbackScraper` class for pages that render their
+  content via JavaScript and can't be parsed from the raw HTML response
+- In production this points at a competitor pricing/plans page; here it
+  targets a live public listing to keep the script runnable out of the box
+
+```bash
+pip install requests beautifulsoup4 selenium
+python web_scraping/scrape_market_signal.py
+```
+
+The idea: churn isn't only about internal signals like tenure and
+contract type — external market pressure (competitor activity, pricing
+moves) is a natural next feature/context source, and this module is the
+collection step for that.
+
 ## Tech stack
-`Python` (pandas, scikit-learn, SHAP, openpyxl) · `SQL` (CTEs & window functions) · `Chart.js` for the dashboard front end.
+`Python` (pandas, scikit-learn, SHAP, openpyxl, requests, BeautifulSoup, Selenium) · `SQL` (CTEs & window functions) · `Chart.js` for the dashboard front end.
 
 ---
 *Note: this project uses a synthetic dataset engineered to mirror real-world telecom churn patterns (contract-driven risk, tenure decay, service-tier effects) for demonstration purposes. The pipeline is designed to plug into a live customer table with minimal changes.*
